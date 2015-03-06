@@ -1,0 +1,4 @@
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  # Hz
+  publish_rate: 1000

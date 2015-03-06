@@ -1,0 +1,12 @@
+<launch>
+  <arg name="speed_factor" default="10.0"/>
+
+  <!-- Start the Joy Node -->
+  <node name="joy_node" pkg="joy" type="joy_node" output="screen"/>
+
+  <!-- Start the Joy teleop script -->
+  <node name="joy_teleop" pkg="pi2go_control" type="joy_teleop.py" output="screen">
+    <param name="speed_factor" value="$(arg speed_factor)"/>
+  </node>
+
+</launch>

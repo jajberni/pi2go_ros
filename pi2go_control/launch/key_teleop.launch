@@ -1,0 +1,9 @@
+<launch>
+  <arg name="speed_factor" default="10.0"/>
+
+  <!-- Start the Key teleop script -->
+  <node name="key_teleop" pkg="pi2go_control" type="key_teleop.py" output="screen">
+    <param name="speed_factor" value="$(arg speed_factor)"/>
+  </node>
+
+</launch>
