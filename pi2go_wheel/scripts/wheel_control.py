@@ -41,6 +41,10 @@ class WheelControl():
         self.pwm_scale = rospy.get_param("~pwm_scale", 10)
         self.left = 0
         self.right = 0
+        self.pwm_left_forward = None
+        self.pwm_left_reverse = None
+        self.pwm_right_forward = None
+        self.pwm_right_reverse = None
 
     def init_gpio(self):
         # Pins 24, 26 Left Motor
@@ -69,6 +73,8 @@ class WheelControl():
 
         # Define if servo background process is active
         self.servos_active = False
+
+        rospy.loginfo("Setting up GPIOs")
 
         #use physical pin numbering
         GPIO.setmode(GPIO.BOARD)
