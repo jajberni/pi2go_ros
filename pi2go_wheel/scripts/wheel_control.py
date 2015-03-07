@@ -24,7 +24,7 @@ class WheelControl():
         # At the moment we only support PGLite
         self.PGType = PGLite
 
-        #self.init_gpio()
+        self.init_gpio()
 
         rospy.init_node("wheel_control")
         self.nodename = rospy.get_name()
