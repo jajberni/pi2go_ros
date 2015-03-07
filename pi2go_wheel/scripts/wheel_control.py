@@ -24,8 +24,6 @@ class WheelControl():
         # At the moment we only support PGLite
         self.PGType = PGLite
 
-        self.init_gpio()
-
         rospy.init_node("wheel_control")
         self.nodename = rospy.get_name()
         rospy.loginfo("%s started" % self.nodename)
@@ -45,6 +43,7 @@ class WheelControl():
         self.pwm_left_reverse = None
         self.pwm_right_forward = None
         self.pwm_right_reverse = None
+        self.init_gpio()
 
     def init_gpio(self):
         # Pins 24, 26 Left Motor
