@@ -46,6 +46,9 @@ class WheelControl():
         self.init_gpio()
 
     def init_gpio(self):
+        # Disable warnings
+        GPIO.setwarnings(False)
+
         # Pins 24, 26 Left Motor
         # Pins 19, 21 Right Motor
         gpio_left_forward = 26
@@ -127,7 +130,7 @@ class WheelControl():
 
         self.right = 1.0 * self.dx + self.dr * self.w / 2.0
         self.left = 1.0 * self.dx - self.dr * self.w / 2.0
-        rospy.loginfo("publishing: ({left}, {right})".format(left=self.left, right=self.right))
+        #rospy.loginfo("publishing: ({left}, {right})".format(left=self.left, right=self.right))
 
         self.pub_lmotor.publish(self.left)
         self.pub_rmotor.publish(self.right)
@@ -139,7 +142,7 @@ class WheelControl():
 
 
     def twistCallback(self, msg):
-        rospy.loginfo("-D- twistCallback: %s" % str(msg))
+        #rospy.loginfo("-D- twistCallback: %s" % str(msg))
         self.ticks_since_target = 0
         self.dx = msg.linear.x
         self.dr = msg.angular.z
