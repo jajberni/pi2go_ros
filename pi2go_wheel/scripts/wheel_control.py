@@ -149,24 +149,28 @@ class WheelControl():
         val = GPIO.input(self.gpio_switch)
         return val == 0
 
-    # go(leftSpeed, rightSpeed): controls motors in both directions independently using different positive/negative speeds. -100<= leftSpeed,rightSpeed <= 100
-    def go(self, leftSpeed, rightSpeed):
-        if leftSpeed < 0:
+    # go(leftSpeed, rightSpeed): controls motors in both directions independently using different
+    # positive/negative speeds. -100<= leftSpeed,rightSpeed <= 100
+    def go(self, left_speed, right_speed):
+        left_speed = max(min(100, left_speed), -100)
+        right_speed = max(min(100, right_speed), -100)
+
+        if left_speed < 0:
             self.pwm_left_forward.ChangeDutyCycle(0)
-            self.pwm_left_reverse.ChangeDutyCycle(abs(leftSpeed))
-            self.pwm_left_reverse.ChangeFrequency(abs(leftSpeed) + 5)
+            self.pwm_left_reverse.ChangeDutyCycle(abs(left_speed))
+            self.pwm_left_reverse.ChangeFrequency(abs(left_speed) + 5)
         else:
             self.pwm_left_reverse.ChangeDutyCycle(0)
-            self.pwm_left_forward.ChangeDutyCycle(leftSpeed)
-            self.pwm_left_forward.ChangeFrequency(leftSpeed + 5)
-        if rightSpeed < 0:
+            self.pwm_left_forward.ChangeDutyCycle(left_speed)
+            self.pwm_left_forward.ChangeFrequency(left_speed + 5)
+        if right_speed < 0:
             self.pwm_right_forward.ChangeDutyCycle(0)
-            self.pwm_right_reverse.ChangeDutyCycle(abs(rightSpeed))
-            self.pwm_right_reverse.ChangeFrequency(abs(rightSpeed) + 5)
+            self.pwm_right_reverse.ChangeDutyCycle(abs(right_speed))
+            self.pwm_right_reverse.ChangeFrequency(abs(right_speed) + 5)
         else:
             self.pwm_right_reverse.ChangeDutyCycle(0)
-            self.pwm_right_forward.ChangeDutyCycle(rightSpeed)
-            self.pwm_right_forward.ChangeFrequency(rightSpeed + 5)
+            self.pwm_right_forward.ChangeDutyCycle(right_speed)
+            self.pwm_right_forward.ChangeFrequency(right_speed + 5)
 
 
 if __name__ == '__main__':
