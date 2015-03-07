@@ -159,7 +159,7 @@ class WheelControl():
             self.pwm_right_reverse.ChangeDutyCycle(abs(rightSpeed))
             self.pwm_right_reverse.ChangeFrequency(abs(rightSpeed) + 5)
         else:
-            self.pwm_right_revers.ChangeDutyCycle(0)
+            self.pwm_right_reverse.ChangeDutyCycle(0)
             self.pwm_right_forward.ChangeDutyCycle(rightSpeed)
             self.pwm_right_forward.ChangeFrequency(rightSpeed + 5)
 
