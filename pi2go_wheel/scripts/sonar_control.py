@@ -48,3 +48,8 @@ class SonarControl():
         # multiplied by the speed of sound 34000(cm/s) divided by 2
         distance = elapsed * 17000
         self.pub_distance.publish(distance)
+
+if __name__ == '__main__':
+    """ main """
+    sonar_control = SonarControl()
+    sonar_control.spin()
