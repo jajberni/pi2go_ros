@@ -35,7 +35,7 @@ class WheelControl():
         #Publish encoder counts
         self.pub_lwheel = rospy.Publisher('lwheel', Int32)
         self.pub_rwheel = rospy.Publisher('rwheel', Int32)
-        self.encoder_running = False
+        self.encoder_running = True
 
         rospy.Subscriber('cmd_vel', Twist, self.twistCallback)
         self.rate = rospy.get_param("~rate", 50)
@@ -56,7 +56,6 @@ class WheelControl():
         # start encoder
         self.thread_encoder = threading.Thread(target=self.encoder_counter())
         self.thread_encoder.start()
-        self.encoder_running = True
 
     def init_gpio(self):
         # Disable warnings
