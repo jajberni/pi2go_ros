@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 import rospy
 import time
 import threading
+import sys
 
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Int32
@@ -60,7 +61,11 @@ class WheelControl():
 
         # start encoder
         self.thread_encoder = threading.Thread(target=self.encoder_counter())
-        self.thread_encoder.start()
+        try:
+            self.thread_encoder.start()
+        except (KeyboardInterrupt, SystemExit):
+            self.encoder_running = False
+            sys.exit()
 
     def init_gpio(self):
         # Disable warnings
