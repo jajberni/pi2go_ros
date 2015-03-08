@@ -13,6 +13,8 @@ import threading
 
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Int32
+from std_msgs.msg import Float32
+
 
 
 class WheelControl():
@@ -35,6 +37,9 @@ class WheelControl():
         #Publish encoder counts
         self.pub_lwheel = rospy.Publisher('lwheel', Int32)
         self.pub_rwheel = rospy.Publisher('rwheel', Int32)
+
+        self.pub_lmotor = rospy.Publisher('lwheel_vtarget', Float32)
+        self.pub_rmotor = rospy.Publisher('rwheel_vtarget', Float32)
         self.encoder_running = True
 
         rospy.Subscriber('cmd_vel', Twist, self.twistCallback)
@@ -145,6 +150,10 @@ class WheelControl():
 
         self.right = 1.0 * self.dx + self.dr * self.w / 2.0
         self.left = 1.0 * self.dx - self.dr * self.w / 2.0
+        rospy.loginfo("publishing: ({left}, {right})".format(left=self.left, right=self.right))
+
+        self.pub_lmotor.publish(self.left)
+        self.pub_rmotor.publish(self.right)
 
         #TODO: Set the actual PWM to the wheels
         self.go(self.left*self.pwm_scale, self.right*self.pwm_scale)
