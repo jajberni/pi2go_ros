@@ -135,6 +135,9 @@ class WheelControl():
                 r.sleep()
             idle.sleep()
 
+        # Stop encoder thread
+        self.encoder_running = False
+
 
     def spinOnce(self):
         # dx = (l + r) / 2
