@@ -1,3 +1,5 @@
+#!/usr/bin/env python2.7
+
 __author__ = 'Jose Jimenez-Berni'
 
 import RPi.GPIO as GPIO
