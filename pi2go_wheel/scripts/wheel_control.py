@@ -8,9 +8,11 @@ __author__ = 'Jose A. Jimenez-Berni'
 # Import all necessary libraries
 import RPi.GPIO as GPIO
 import rospy
+import time
+import threading
 
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32
+from std_msgs.msg import Int32
 
 
 class WheelControl():
@@ -30,8 +32,10 @@ class WheelControl():
 
         self.w = rospy.get_param("~base_width", 0.2)
 
-        self.pub_lmotor = rospy.Publisher('lwheel_vtarget', Float32)
-        self.pub_rmotor = rospy.Publisher('rwheel_vtarget', Float32)
+        #Publish encoder counts
+        self.pub_lwheel = rospy.Publisher('lwheel', Int32)
+        self.pub_rwheel = rospy.Publisher('rwheel', Int32)
+        self.encoder_running = False
 
         rospy.Subscriber('cmd_vel', Twist, self.twistCallback)
         self.rate = rospy.get_param("~rate", 50)
@@ -39,11 +43,20 @@ class WheelControl():
         self.pwm_scale = rospy.get_param("~pwm_scale", 10)
         self.left = 0
         self.right = 0
+        self.lwheel = 0
+        self.rwheel = 0
+        self.last_lwheel = 2
+        self.last_rwheel = 2
         self.pwm_left_forward = None
         self.pwm_left_reverse = None
         self.pwm_right_forward = None
         self.pwm_right_reverse = None
         self.init_gpio()
+
+        # start encoder
+        self.thread_encoder = threading.Thread(target=self.encoder_counter())
+        self.thread_encoder.start()
+        self.encoder_running = True
 
     def init_gpio(self):
         # Disable warnings
@@ -60,8 +73,8 @@ class WheelControl():
         ir_front_left = 7
         ir_front_right = 11
 
-        line_right = 13
-        line_left = 12
+        self.line_right = 13
+        self.line_left = 12
 
         # Define GPIO pins for Front/rear LEDs on Pi2Go-Lite
         gpio_front_led = 15
@@ -81,9 +94,9 @@ class WheelControl():
         #use physical pin numbering
         GPIO.setmode(GPIO.BOARD)
 
-        #set up digital line detectors as inputs
-        GPIO.setup(line_right, GPIO.IN) # Right line sensor
-        GPIO.setup(line_left, GPIO.IN) # Left line sensor
+        #set up digital line and encoder detectors as inputs
+        GPIO.setup(self.line_right, GPIO.IN) # Right line sensor
+        GPIO.setup(self.line_left, GPIO.IN) # Left line sensor
 
         #Set up IR obstacle sensors as inputs
         GPIO.setup(ir_front_left, GPIO.IN) # Left obstacle sensor
@@ -130,10 +143,6 @@ class WheelControl():
 
         self.right = 1.0 * self.dx + self.dr * self.w / 2.0
         self.left = 1.0 * self.dx - self.dr * self.w / 2.0
-        #rospy.loginfo("publishing: ({left}, {right})".format(left=self.left, right=self.right))
-
-        self.pub_lmotor.publish(self.left)
-        self.pub_rmotor.publish(self.right)
 
         #TODO: Set the actual PWM to the wheels
         self.go(self.left*self.pwm_scale, self.right*self.pwm_scale)
@@ -151,6 +160,32 @@ class WheelControl():
     def getSwitch(self):
         val = GPIO.input(self.gpio_switch)
         return val == 0
+
+    def encoder_counter(self):
+        last_valid_left = 2
+        last_valid_right = 2
+        last_left = GPIO.input(self.line_left)
+        last_right = GPIO.input(self.line_right)
+        while self.encoder_running:
+            time.sleep(0.002)
+            gpio_status = GPIO.input(self.line_left)
+            if gpio_status == last_left and gpio_status != last_valid_left:
+                if self.left > 0:
+                    self.lwheel += 1
+                else:
+                    self.lwheel -= 1
+                last_valid_left = gpio_status
+                self.pub_lwheel.publish(self.lwheel)
+            last_left = gpio_status
+            gpio_status = GPIO.input(self.line_right)
+            if gpio_status == last_right and gpio_status != last_valid_right:
+                if self.right > 0:
+                    self.rwheel += 1
+                else:
+                    self.rwheel -= 1
+                last_valid_right = gpio_status
+                self.pub_rwheel.publish(self.rwheel)
+            last_right = gpio_status
 
     # go(leftSpeed, rightSpeed): controls motors in both directions independently using different
     # positive/negative speeds. -100<= leftSpeed,rightSpeed <= 100
