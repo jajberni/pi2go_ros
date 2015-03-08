@@ -2,6 +2,8 @@ __author__ = 'Jose Jimenez-Berni'
 
 import RPi.GPIO as GPIO
 import time
+import rospy
+from std_msgs.msg import Float32
 
 
 class SonarControl():
@@ -9,7 +11,19 @@ class SonarControl():
     def __init__(self):
         # Define Sonar Pin (same pin for both Ping and Echo
         self.gpio_sonar = 8
+        rospy.init_node("sonar_control")
+        self.nodename = rospy.get_name()
+        rospy.loginfo("%s started" % self.nodename)
 
+        self.rate = rospy.get_param('~rate', 5.0)  # the rate at which to publish
+
+        self.pub_distance = rospy.Publisher('sonar_distance', Float32)
+
+    def spin(self):
+        r = rospy.Rate(self.rate)
+        while not rospy.is_shutdown():
+            self.get_sonar_distance()
+            r.sleep()
 
     def get_sonar_distance(self):
         GPIO.setup(self.gpio_sonar, GPIO.OUT)
@@ -31,4 +45,4 @@ class SonarControl():
         # Distance pulse travelled in that time is time
         # multiplied by the speed of sound 34000(cm/s) divided by 2
         distance = elapsed * 17000
-        return distance
+        self.pub_distance.publish(distance)
