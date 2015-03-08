@@ -13,6 +13,9 @@ class SonarControl():
     def __init__(self):
         # Define Sonar Pin (same pin for both Ping and Echo
         self.gpio_sonar = 8
+        #use physical pin numbering
+        GPIO.setmode(GPIO.BOARD)
+
         rospy.init_node("sonar_control")
         self.nodename = rospy.get_name()
         rospy.loginfo("%s started" % self.nodename)
