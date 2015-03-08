@@ -166,6 +166,7 @@ class WheelControl():
         last_valid_right = 2
         last_left = GPIO.input(self.line_left)
         last_right = GPIO.input(self.line_right)
+        rospy.loginfo("Encoders started")
         while self.encoder_running:
             time.sleep(0.002)
             gpio_status = GPIO.input(self.line_left)

@@ -15,6 +15,8 @@ class SonarControl():
         self.gpio_sonar = 8
         #use physical pin numbering
         GPIO.setmode(GPIO.BOARD)
+        # Disable warnings
+        GPIO.setwarnings(False)
 
         rospy.init_node("sonar_control")
         self.nodename = rospy.get_name()
