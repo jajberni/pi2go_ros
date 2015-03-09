@@ -148,7 +148,8 @@ class WheelControl():
             idle.sleep()
 
         # Stop encoder thread
-        #self.encoder_running = False
+        rospy.loginfo("Stopping encoders...")
+        self.encoder_running = False
 
 
     def spinOnce(self):
@@ -157,7 +158,7 @@ class WheelControl():
 
         self.right = 1.0 * self.dx + self.dr * self.w / 2.0
         self.left = 1.0 * self.dx - self.dr * self.w / 2.0
-        rospy.loginfo("publishing: ({left}, {right})".format(left=self.left, right=self.right))
+        #rospy.loginfo("publishing: ({left}, {right})".format(left=self.left, right=self.right))
 
         self.pub_lmotor.publish(self.left)
         self.pub_rmotor.publish(self.right)
@@ -195,7 +196,7 @@ class WheelControl():
                     self.lwheel -= 1
                 last_valid_left = gpio_status
                 self.pub_lwheel.publish(self.lwheel)
-                rospy.loginfo("Left count {}".format(self.lwheel))
+                #rospy.loginfo("Left count {}".format(self.lwheel))
             last_left = gpio_status
             gpio_status = GPIO.input(self.line_right)
             if gpio_status == last_right and gpio_status != last_valid_right:
@@ -205,7 +206,7 @@ class WheelControl():
                     self.rwheel -= 1
                 last_valid_right = gpio_status
                 self.pub_rwheel.publish(self.rwheel)
-                rospy.loginfo("Right count {}".format(self.rwheel))
+                #rospy.loginfo("Right count {}".format(self.rwheel))
             last_right = gpio_status
 
     # go(leftSpeed, rightSpeed): controls motors in both directions independently using different
