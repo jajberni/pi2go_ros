@@ -60,11 +60,11 @@ class WheelControl():
         self.init_gpio()
 
         # start encoder
-        self.thread_encoder = threading.Thread(target=self.encoder_counter())
+        self.thread_encoder = threading.Thread(target=self.encoder_counter)
         self.thread_encoder.daemon = True
         try:
             self.thread_encoder.start()
-            ospy.loginfo("Encoders running in the background")
+            rospy.loginfo("Encoders running in the background")
         except (KeyboardInterrupt, SystemExit):
             self.encoder_running = False
             sys.exit()
